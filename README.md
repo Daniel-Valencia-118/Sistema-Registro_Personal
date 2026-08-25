@@ -36,5 +36,7 @@ Sistema web desarrollado con **Laravel 13**, **React 19** e **Inertia.js 3** par
 ## Instalación local
 
 1. **Clonar el repositorio**
-git clone https://github.com/tu-usuario/fundacion-alalay.git
-cd fundacion-alalay
+git clone https://github.com/Daniel-Valencia-118/Sistema-Registro_Personal.git
+
+## Crear Admin, ejecutar:
+php artisan make:admin
