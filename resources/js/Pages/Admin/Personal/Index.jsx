@@ -24,7 +24,7 @@ export default function AdminPersonalIndex({ personal, filters, user }) {
         <AdminLayout user={user}>
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Personal</h1>
 
-            <SearchBar initialSearch={filters.search || ''} url="/admin/personal" />
+            <SearchBar initialSearch={filters.search || ''} url="/admin/personal" user={user} />
 
             <Table headers={headers}>
                 {personal.data.map((persona) => (

@@ -33,19 +33,16 @@ class User extends Authenticatable
         'estado' => 'boolean',
     ];
 
-    // Accesor para nombre completo
     public function getNombreCompletoAttribute(): string
     {
         return trim("{$this->nombre} {$this->paterno} {$this->materno}");
     }
 
-    // Método para verificar si el usuario está activo
     public function isActivo(): bool
     {
         return $this->estado === true;
     }
 
-    // Método para verificar si tiene un rol específico
     public function hasRole(string $role): bool
     {
         return $this->rol === $role;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\RRHH;
+namespace App\Http\Controllers\Gestion;
 
 use App\Http\Controllers\Controller;
 use App\Models\Persona;
@@ -29,10 +29,16 @@ class PersonalController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        if (auth()->user()->hasRole('admin')) {
+            return Inertia::render('Admin/Personal/Index', [
+                'personal' => $personal,
+                'filters' => ['search' => $search],
+            ]);
+        }
+
         return Inertia::render('RRHH/Personal/Index', [
             'personal' => $personal,
             'filters' => ['search' => $search],
-            'user' => auth()->user(),
         ]);
     }
 
@@ -44,6 +50,16 @@ class PersonalController extends Controller
         return Inertia::render('ShowPersonal', [
             'persona' => $persona,
         ]);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $persona = Persona::findOrFail($id);
+        $request->validate(['estado' => 'required|in:aprobado,rechazado,observado']);
+        $persona->estado = $request->estado;
+        $persona->save();
+
+        return redirect()->back()->with('success', 'Estado actualizado');
     }
 
     public function export(Request $request)

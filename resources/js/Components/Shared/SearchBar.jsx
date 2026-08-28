@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { router } from '@inertiajs/react';
 import Button from '../Forms/Button';
 
-export default function SearchBar({ initialSearch = '', url }) {
+export default function SearchBar({ initialSearch = '', url, user }) {
     const [search, setSearch] = useState(initialSearch);
 
     const handleSearch = (e) => {
@@ -12,7 +12,7 @@ export default function SearchBar({ initialSearch = '', url }) {
 
     const handleExport = () => {
         const queryParam = encodeURIComponent(search || '');
-        window.location.href = `/rrhh/personal/exportar?search=${queryParam}`;
+        window.location.href = `/personal/exportar?search=${queryParam}`;
     };
 
     return (

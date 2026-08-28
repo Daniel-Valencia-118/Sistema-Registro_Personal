@@ -5,7 +5,7 @@ import { formatFecha } from '../../utils/dateUtils';
 import MapViewer from '../Components/Forms/MapViewer';
 import html2canvas from 'html2canvas-pro';
 import { pdf } from '@react-pdf/renderer';
-import { FichaPersonalPDF } from './PDFs/FichaPersonalPDF';
+import { FichaPersonalPDF } from './Reportes/FichaPersonalPDF';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 

@@ -5,10 +5,10 @@ use Inertia\Inertia;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\RegistroPersonalController;
-use App\Http\Controllers\RRHH\PersonalController;
-use App\Http\Controllers\RRHH\CuentaController;
+use App\Http\Controllers\Gestion\PersonalController;
+use App\Http\Controllers\Gestion\CuentaController;
 use App\Http\Controllers\Admin\UsuarioController;
-use App\Http\Controllers\RRHH\FichaPDFController;
+use App\Http\Controllers\Gestion\FichaPDFController;
 
 
 Route::get('/', function () { 
@@ -25,13 +25,11 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-// Route::middleware(['throttle:registro'])->group(function () {
-    Route::get('/registro-personal', [RegistroPersonalController::class, 'create'])->name('registro.personal');
-    Route::post('/registro-personal', [RegistroPersonalController::class, 'store'])->name('registro.personal.store');
-    Route::get('/registro-exitoso', function () {
-        return Inertia::render('RegistroExitoso');
-    })->name('registro.exitoso');
-// });
+Route::get('/registro-personal', [RegistroPersonalController::class, 'create'])->name('registro.personal');
+Route::post('/registro-personal', [RegistroPersonalController::class, 'store'])->name('registro.personal.store');
+Route::get('/registro-exitoso', function () {
+    return Inertia::render('RegistroExitoso');
+})->name('registro.exitoso');
 
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth.role:admin'])->prefix('admin')->group(function () {
@@ -42,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
         });
 
 
-        Route::get('/personal', [PersonaController::class, 'index'])->name('admin.personal.index');
+        Route::get('/personal', [PersonalController::class, 'index'])->name('admin.personal.index');
         Route::get('/personal/{id}', [PersonaController::class, 'show'])->name('admin.personal.show');
         Route::put('/personal/{id}/estado', [PersonaController::class, 'updateStatus'])->name('admin.personal.updateStatus');
 
@@ -63,8 +61,6 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('rrhh.personal.index');
         });
 
-
-        Route::get('/personal/exportar', [PersonalController::class, 'export'])->name('rrhh.personal.export');
         Route::get('/personal', [PersonalController::class, 'index'])->name('rrhh.personal.index');
         Route::get('/personal/{id}', [PersonalController::class, 'show'])->name('rrhh.personal.show');
 
@@ -74,6 +70,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['auth.role:admin,encargado'])->group(function () {
+        Route::get('/personal/exportar', [PersonalController::class, 'export'])->name('rrhh.personal.export');
         Route::get('/personal/{id}/ficha-pdf', [FichaPDFController::class, 'generate'])->name('rrhh.personal.ficha.pdf');
     });
 });
