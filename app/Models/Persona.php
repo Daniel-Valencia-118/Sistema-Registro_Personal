@@ -19,23 +19,22 @@ class Persona extends Model
         'fecha_nacimiento', 'lugar_nacimiento_provincia', 'lugar_nacimiento_ciudad',
         'estado_civil', 'numero_hijos', 'email', 'telefono', 'celular',
         'direccion_actual', 'fecha_ingreso_fundacion', 'cargo_actual',
-        'url_croquis', 'url_foto',
-        'estado', // nuevo campo
+        'oficina_actual', 'longitude', 'latitude', 'url_croquis', 'url_foto', 'estado',
     ];
 
     protected $casts = [
         'fecha_nacimiento' => 'date',
         'fecha_ingreso_fundacion' => 'date',
         'numero_hijos' => 'integer',
+        'longitude' => 'float',
+        'latitude' => 'float',
     ];
 
-    // Accesor para nombre completo
     public function getNombreCompletoAttribute(): string
     {
         return trim("{$this->nombres} {$this->paterno} {$this->materno}");
     }
 
-    // Relaciones
     public function experienciasLaborales(): HasMany
     {
         return $this->hasMany(ExperienciaLaboral::class, 'id_persona', 'id');
@@ -56,7 +55,6 @@ class Persona extends Model
         return $this->hasMany(Estudio::class, 'id_persona', 'id');
     }
 
-    // Métodos de estado
     public function cambiarEstado(string $nuevoEstado): void
     {
         if (!in_array($nuevoEstado, ['aprobado', 'observado', 'rechazado'])) {

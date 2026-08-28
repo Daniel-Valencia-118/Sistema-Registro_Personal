@@ -8,13 +8,12 @@ import Button from '../../../Components/Forms/Button';
 
 export default function AdminPersonalIndex({ personal, filters, user }) {
     const headers = ['Paterno', 'Materno', 'Nombres', 'CI', 'Expedición', 'Email', 'Celular', 'Cargo', 'Estado', 'Acciones'];
-
+    
     const handleChangeStatus = (id, newStatus) => {
         if (confirm(`¿Estás seguro de cambiar el estado a "${newStatus}"?`)) {
             router.put(`/admin/personal/${id}/estado`, { estado: newStatus }, {
                 preserveState: true,
                 onSuccess: () => {
-                    // Recargar la página para reflejar cambios
                     router.reload();
                 }
             });

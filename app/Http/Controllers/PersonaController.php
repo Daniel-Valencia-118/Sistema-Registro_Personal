@@ -55,7 +55,8 @@ class PersonaController extends Controller
             'cargo_actual' => 'nullable|string|max:100',
             'url_croquis' => 'nullable|string|max:255',
             'url_foto' => 'nullable|string|max:255',
-            'estado' => 'nullable|in:aprobado,observado,rechazado', // nuevo
+            'estado' => 'nullable|in:aprobado,observado,rechazado',
+            'oficina_actual' => 'nullable|string|max:100',
         ]);
 
         if ($validator->fails()) {

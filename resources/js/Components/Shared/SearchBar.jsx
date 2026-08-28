@@ -12,7 +12,6 @@ export default function SearchBar({ initialSearch = '', url }) {
 
     const handleExport = () => {
         const queryParam = encodeURIComponent(search || '');
-        // Redirige a la ruta de exportación, que descargará el Excel
         window.location.href = `/rrhh/personal/exportar?search=${queryParam}`;
     };
 

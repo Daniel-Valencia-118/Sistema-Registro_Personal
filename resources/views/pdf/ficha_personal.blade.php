@@ -84,16 +84,18 @@
         }
 
         .photo-container {
-            width: 130px;
-            height: 130px;
+            width: 150px;
+            height: 150px;
             border: 1px solid #555555;
+            
             text-align: center;
             vertical-align: middle;
             background-color: #fafafa;
         }
         .photo-container img {
-            max-width: 108px;
-            max-height: 135px;
+            max-width: 100%;
+            max-height: 100%;
+            /* padding-top: 5%; */
             display: block;
             margin: 0 auto;
         }
@@ -118,7 +120,7 @@
 
         .signatures-table {
             width: 100%;
-            margin-top: 35px;
+            margin-top: 100px;
             border-collapse: collapse;
             page-break-inside: avoid;
         }
@@ -141,7 +143,6 @@
 </head>
 <body>
 
-    <!-- Encabezado con Nombre Institucional y Título -->
     <table class="header-table">
         <tr>
             <td style="width: 35%;">
@@ -153,7 +154,6 @@
         </tr>
     </table>
 
-    <!-- 1. INFORMACIÓN GENERAL + FOTO -->
     <div class="section-box">
         <div class="section-title">Información General</div>
         <table class="main-info-table">
@@ -213,10 +213,10 @@
                         </tr>
                     </table>
                 </td>
-                <td style="width: 115px; padding-left: 4px;">
+                <td style="width: 140px; padding-left: 4px;">
                     <div class="photo-container">
                         @if(!empty($foto_url))
-                            <img src="{{ $foto_url }}" alt="Fotografía">
+                            <img src="{{ $foto_path }}" alt="foto">
                         @else
                             <div class="photo-placeholder">Fotografía</div>
                         @endif
@@ -224,16 +224,32 @@
                 </td>
             </tr>
         </table>
+    </div>
+    
+<div class="croquis-box">
+    <img 
+        src="https://static-maps.yandex.ru/1.x/?lang=es_ES&ll={{ $longitude }},{{ $latitude }}&z=16&l=map&pt={{ $longitude }},{{ $latitude }},pm2rdm&size=650,250" 
+        class="croquis-img"
+        alt="Mapa de Ubicación"
+    >
+</div>
 
-        @if(!empty($persona->url_croquis))
-            <div class="croquis-box">
-                <div style="font-weight: bold; font-size: 8.5pt; margin-bottom: 2px;">CROQUIS DE DOMICILIO</div>
-                <img src="{{ $persona->url_croquis }}" class="croquis-img" alt="Croquis">
-            </div>
-        @endif
+    <div class="section-box">
+        <div class="section-title">Información Institucional</div>
+        <table class="grid-table">
+            <tr>
+                <td class="label-cell" style="width: 25%;">Fecha de Ingreso a la Fundación</td>
+                <td class="value-cell" style="width: 25%;">
+                    {{ $persona->fecha_ingreso_fundacion ? \Carbon\Carbon::parse($persona->fecha_ingreso_fundacion)->format('d/m/Y') : '-' }}
+                </td>
+                <td class="label-cell" style="width: 15%;">Cargo</td>
+                <td class="value-cell" style="width: 35%;">{{ $persona->cargo_actual ?? '-' }}</td>
+                <td class="label-cell" style="width: 15%;">Oficina Actual </td>
+                <td class="value-cell" style="width: 35%;">{{ $persona->oficina_actual ?? '-' }}</td>
+            </tr>
+        </table>
     </div>
 
-    <!-- 2. INFORMACIÓN PROFESIONAL -->
     <div class="section-box">
         <div class="section-title">Información Profesional</div>
         @if($persona->estudios->count())
@@ -264,7 +280,6 @@
         @endif
     </div>
 
-    <!-- 3. EXPERIENCIA LABORAL -->
     <div class="section-box">
         <div class="section-title">Experiencia Laboral</div>
         @if($persona->experienciasLaborales->count())
@@ -296,21 +311,6 @@
         @endif
     </div>
 
-    <!-- 4. DATOS EN LA FUNDACIÓN -->
-    <div class="section-box">
-        <table class="grid-table">
-            <tr>
-                <td class="label-cell" style="width: 25%;">Fecha de Ingreso a la Fundación</td>
-                <td class="value-cell" style="width: 25%;">
-                    {{ $persona->fecha_ingreso_fundacion ? \Carbon\Carbon::parse($persona->fecha_ingreso_fundacion)->format('d/m/Y') : '-' }}
-                </td>
-                <td class="label-cell" style="width: 15%;">Cargo</td>
-                <td class="value-cell" style="width: 35%;">{{ $persona->cargo_actual ?? '-' }}</td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- 5. REFERENCIAS LABORALES -->
     <div class="section-box">
         <div class="section-title">Referencias Laborales</div>
         @if($persona->referenciasLaborales->count())
@@ -339,7 +339,6 @@
         @endif
     </div>
 
-    <!-- 6. DATOS FAMILIARES -->
     <div class="section-box">
         <div class="section-title">Datos familiares</div>
         @php $familiares = $persona->contactos->where('es_familiar', true); @endphp
@@ -369,7 +368,6 @@
         @endif
     </div>
 
-    <!-- 7. REFERENCIAS PERSONALES -->
     <div class="section-box">
         <div class="section-title">Referencias Personales (Al menos 3 referencias)</div>
         @php $personales = $persona->contactos->where('es_familiar', false); @endphp
@@ -399,7 +397,6 @@
         @endif
     </div>
 
-    <!-- Bloque de Firmas -->
     <table class="signatures-table">
         <tr>
             <td>

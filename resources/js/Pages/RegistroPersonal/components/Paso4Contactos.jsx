@@ -2,6 +2,7 @@ import React, { useMemo, useCallback, memo } from 'react';
 import Input from '../../../Components/Forms/Input';
 import Button from '../../../Components/Forms/Button';
 import Card from '../../../Components/Forms/Card';
+
 const ContactoItem = memo(function ContactoItem({
     item,
     globalIndex,
@@ -10,7 +11,7 @@ const ContactoItem = memo(function ContactoItem({
     canDelete,
     handleNestedChange,
     removeItem,
-    errors
+    errors = {}
 }) {
     const handleChange = (field, value) => {
         handleNestedChange('contactos', globalIndex, field, value);
@@ -73,12 +74,13 @@ const ContactoItem = memo(function ContactoItem({
                     required
                 />
                 <Input
-                    label="Edad (opcional)"
+                    label="Edad"
                     type="number"
                     name={`contactos.${globalIndex}.edad`}
                     value={item.edad || ''}
                     onChange={(e) => handleChange('edad', e.target.value)}
                     error={errors[`contactos.${globalIndex}.edad`]}
+                    required
                 />
                 <Input
                     label="Teléfono / Celular"
@@ -106,11 +108,11 @@ export default function Paso4Contactos({
         const ref = [];
 
         contactos.forEach((item, globalIndex) => {
-            const mappedItem = { ...item, globalIndex };
+            const entry = { item, globalIndex };
             if (item.es_familiar) {
-                fam.push(mappedItem);
+                fam.push(entry);
             } else {
-                ref.push(mappedItem);
+                ref.push(entry);
             }
         });
 
@@ -132,18 +134,18 @@ export default function Paso4Contactos({
 
     return (
         <div className="space-y-6">
-            <Card title="Información Familiar">
+            <Card title="Información Familiar (Mínimo 1 requerida)">
                 {familiares.length === 0 ? (
                     <p className="text-sm text-gray-500 italic mb-4">No ha agregado datos familiares.</p>
                 ) : (
-                    familiares.map((item, idx) => (
+                    familiares.map(({ item, globalIndex }, idx) => (
                         <ContactoItem
-                            key={item.temp_id || item.id_familiar || item.globalIndex}
+                            key={item.temp_id || item.id_familiar || globalIndex}
                             item={item}
-                            globalIndex={item.globalIndex}
+                            globalIndex={globalIndex}
                             displayIndex={idx}
                             titlePrefix="Familiar"
-                            canDelete={true}
+                            canDelete={familiares.length > 1}
                             handleNestedChange={handleNestedChange}
                             removeItem={removeItem}
                             errors={errors}
@@ -163,14 +165,14 @@ export default function Paso4Contactos({
             </Card>
 
             <Card title="Referencias Personales (Mínimo 1 requerida)">
-                {referencias.map((item, idx) => (
+                {referencias.map(({ item, globalIndex }, idx) => (
                     <ContactoItem
-                        key={item.temp_id || item.id_familiar || item.globalIndex}
+                        key={item.temp_id || item.id_familiar || globalIndex}
                         item={item}
-                        globalIndex={item.globalIndex}
+                        globalIndex={globalIndex}
                         displayIndex={idx}
                         titlePrefix="Referencia"
-
+                        canDelete={referencias.length > 1}
                         handleNestedChange={handleNestedChange}
                         removeItem={removeItem}
                         errors={errors}

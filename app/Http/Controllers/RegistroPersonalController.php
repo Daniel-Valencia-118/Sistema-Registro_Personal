@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use App\Rules\TurnstileRule;
 
 class RegistroPersonalController extends Controller
 {
@@ -29,17 +30,21 @@ class RegistroPersonalController extends Controller
             'ci_expedicion' => 'required|string|max:10',
             'sexo' => 'required|string|max:15',
             'fecha_nacimiento' => 'required|date',
-            'lugar_nacimiento_provincia' => 'nullable|string|max:100',
-            'lugar_nacimiento_ciudad' => 'nullable|string|max:100',
+            'lugar_nacimiento_provincia' => 'required|string|max:100',
+            'lugar_nacimiento_ciudad' => 'required|string|max:100',
             'estado_civil' => 'nullable|string|max:20',
             'numero_hijos' => 'nullable|integer|min:0',
-            'email' => 'nullable|email|max:150',
+            'email' => 'required|unique:personas,email|max:150',
             'telefono' => 'nullable|string|max:20',
-            'celular' => 'nullable|string|max:20',
-            'direccion_actual' => 'nullable|string|max:255',
-            'fecha_ingreso_fundacion' => 'nullable|date',
-            'cargo_actual' => 'nullable|string|max:100',
+            'celular' => 'required|string|max:20',
+            'direccion_actual' => 'required|string|max:255',
+            'fecha_ingreso_fundacion' => 'required|date',
+            'cargo_actual' => 'required|string|max:100',
+            'oficina_actual' => 'required|string|max:100',
             'url_croquis' => 'nullable|string|max:255',
+            'latitude'     => 'nullable|numeric|between:-90,90',
+            'longitude'    => 'nullable|numeric|between:-180,180',
+            'cf_turnstile_response'  => ['required', new TurnstileRule()],
 
             'estudios' => 'nullable|array',
             'estudios.*.tipo' => 'required_with:estudios.*.titulo_obtenido,estudios.*.institucion|string|max:50',
@@ -66,6 +71,44 @@ class RegistroPersonalController extends Controller
             'contactos.*.edad' => 'nullable|integer|min:0',
             'contactos.*.telefono_celular' => 'required_with:contactos.*.nombre,contactos.*.parentesco_relacion|string|max:20',
             'contactos.*.es_familiar' => 'required_with:contactos.*.nombre,contactos.*.parentesco_relacion|boolean',
+        ], [
+            'paterno' => 'El apellido paterno es obligatorio.',
+            'materno' => 'El apellido materno es obligatorio.',
+            'nombres' => 'El nombre es obligatorio.',
+            'ci' => 'El número de CI es obligatorio y debe ser único.',
+            'ci_expedicion' => 'La expedición del CI es obligatoria.',
+            'sexo' => 'El sexo es obligatorio.',
+            'fecha_nacimiento' => 'La fecha de nacimiento es obligatoria.',
+            'lugar_nacimiento_provincia' => 'La provincia de nacimiento es obligatoria.',
+            'lugar_nacimiento_ciudad' => 'La ciudad de nacimiento es obligatoria.',
+            'estado_civil' => 'El estado civil es obligatorio.',
+            'numero_hijos' => 'El número de hijos debe ser un número entero no negativo.',
+            'email' => 'El correo electrónico debe ser válido.',
+            'telefono' => 'El teléfono debe ser válido.',
+            'celular' => 'El celular debe ser válido.',
+            'direccion_actual' => 'La dirección actual es obligatoria.',
+            'fecha_ingreso_fundacion' => 'La fecha de ingreso a la fundación es obligatoria.',
+            'cargo_actual' => 'El cargo actual es obligatorio.',
+            'oficina_actual' => 'La oficina actual es obligatoria.',
+
+            'estudios.*.tipo' => 'El tipo de estudio es obligatorio.',
+            'estudios.*.titulo_obtenido' => 'El título obtenido es obligatorio.',
+            'estudios.*.institucion' => 'La institución es obligatoria.',
+
+            'experiencias.*.institucion' => 'La institución de la experiencia laboral es obligatoria.',
+            'experiencias.*.cargo' => 'El cargo de la experiencia laboral es obligatorio.',
+            'experiencias.*.fecha_inicio' => 'La fecha de inicio de la experiencia laboral es obligatoria.',
+
+            'referencias.*.nombre_referente' => 'El nombre del referente laboral es obligatorio.',
+            'referencias.*.institucion' => 'La institución del referente laboral es obligatoria.',
+            'referencias.*.telefono_celular' => 'El teléfono o celular del referente laboral es obligatorio.',
+
+            'contactos.*.nombre' => 'El nombre del contacto es obligatorio.',
+            'contactos.*.paterno' => 'El apellido paterno del contacto es obligatorio.',
+            'contactos.*.materno' => 'El apellido materno del contacto es obligatorio.',
+            'contactos.*.parentesco_relacion' => 'El parentesco o relación del contacto es obligatorio.',
+            'contactos.*.telefono_celular' => 'El teléfono o celular del contacto es obligatorio.',
+            'contactos.*.es_familiar' => 'Debe indicar si el contacto es familiar o no.',
         ]);
 
         if ($validator->fails()) {
@@ -79,7 +122,7 @@ class RegistroPersonalController extends Controller
                 'fecha_nacimiento', 'lugar_nacimiento_provincia', 'lugar_nacimiento_ciudad',
                 'estado_civil', 'numero_hijos', 'email', 'telefono', 'celular',
                 'direccion_actual', 'fecha_ingreso_fundacion', 'cargo_actual',
-                'url_croquis'
+                'url_croquis', 'latitude', 'longitude', 'oficina_actual'
             ]);
             $personaData['estado'] = 'aprobado';
 
@@ -119,6 +162,7 @@ class RegistroPersonalController extends Controller
                     ReferenciaLaboral::create([
                         'id_persona' => $persona->id,
                         'nombre_referente' => $ref['nombre_referente'],
+                        'institucion' => $ref['institucion'],
                         'telefono_celular' => $ref['telefono_celular'],
                     ]);
                 }

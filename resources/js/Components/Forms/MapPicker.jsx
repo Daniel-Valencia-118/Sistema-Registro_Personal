@@ -1,57 +1,65 @@
-import React from 'react';
-import Input from './Input';
+import React, { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
-export default function MapPicker({ 
-    label, 
-    value, 
-    onChange, 
-    error, 
-    placeholder = 'URL del croquis o coordenadas (Ej: -16.50,-68.12)',
-    required = false,
-    className = '',
-    ...props
-}) {
-    
-    // Función utilitaria para comprobar si hay algo escrito y ofrecer previsualización
-    const obtenerLinkMapas = () => {
-        if (!value) return null;
-        // Si ya es una URL completa de Google Maps, la devuelve directa
-        if (value.startsWith('http://') || value.startsWith('https://')) return value;
-        // Si son coordenadas separadas por coma, construye el buscador dinámico
-        return `https://google.com{encodeURIComponent(value)}`;
-    };
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
-    const linkMapas = obtenerLinkMapas();
+function RecentrarMapa({ coords }) {
+    const map = useMap();
+    useEffect(() => {
+        if (coords[0] && coords[1]) {
+            map.setView(coords, map.getZoom());
+        }
+    }, [coords, map]);
+    return null;
+}
+
+export default function MapPicker({ lat, lng, onChange, height = '350px' }) {
+    const centroCiudad = [-16.495581349984814, -68.13352637564697]; 
+    const centroInicial = lat && lng ? [lat, lng] : centroCiudad;
+
+    function ClickListener() {
+        useMapEvents({
+            click(e) {
+                onChange({
+                    lat: e.latlng.lat,
+                    lng: e.latlng.lng
+                });
+            },
+        });
+        return null;
+    }
 
     return (
-        <div className={`relative ${className}`}>
-            <Input
-                label={label}
-                name="url_croquis"
-                type="text"
-                value={value}
-                onChange={onChange}
-                placeholder={placeholder}
-                error={error}
-                required={required}
-                // Añadimos padding a la derecha si hay link para que el texto no tape el botón
-                className={linkMapas ? 'pr-24' : ''} 
-                {...props}
+        <div className="w-full border rounded overflow-hidden z-0" style={{ height }}>
+            <MapContainer 
+                center={centroInicial} 
+                zoom={20}
+                style={{ height: '100%', width: '100%' }}
+            >
+            <TileLayer
+                attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                subdomains={['a', 'b', 'c']}
             />
-            
-            {/* Botón flotante interactivo de ayuda al usuario */}
-            {linkMapas && !error && (
-                <div className="absolute right-2 top-8.5">
-                    <a
-                        href={linkMapas}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center px-2 py-1 text-xs bg-blue-50 text-blue-600 border border-blue-200 rounded hover:bg-blue-100 transition"
-                    >
-                        🗺️ Ver mapa
-                    </a>
-                </div>
-            )}
+
+                
+                <ClickListener />
+                <RecentrarMapa coords={[lat, lng]} />
+
+                {lat && lng && (
+                    <Marker position={[lat, lng]} />
+                )}
+            </MapContainer>
         </div>
     );
 }

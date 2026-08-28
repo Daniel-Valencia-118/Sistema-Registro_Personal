@@ -25,11 +25,13 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-Route::get('/registro-personal', [RegistroPersonalController::class, 'create'])->name('registro.personal');
-Route::post('/registro-personal', [RegistroPersonalController::class, 'store'])->name('registro.personal.store');
-Route::get('/registro-exitoso', function () {
-    return Inertia::render('RegistroExitoso');
-})->name('registro.exitoso');
+// Route::middleware(['throttle:registro'])->group(function () {
+    Route::get('/registro-personal', [RegistroPersonalController::class, 'create'])->name('registro.personal');
+    Route::post('/registro-personal', [RegistroPersonalController::class, 'store'])->name('registro.personal.store');
+    Route::get('/registro-exitoso', function () {
+        return Inertia::render('RegistroExitoso');
+    })->name('registro.exitoso');
+// });
 
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth.role:admin'])->prefix('admin')->group(function () {
@@ -71,5 +73,7 @@ Route::middleware(['auth'])->group(function () {
 
     });
 
-    Route::get('/personal/{id}/ficha-pdf', [FichaPDFController::class, 'generate'])->name('rrhh.personal.ficha.pdf');
+    Route::middleware(['auth.role:admin,encargado'])->group(function () {
+        Route::get('/personal/{id}/ficha-pdf', [FichaPDFController::class, 'generate'])->name('rrhh.personal.ficha.pdf');
+    });
 });

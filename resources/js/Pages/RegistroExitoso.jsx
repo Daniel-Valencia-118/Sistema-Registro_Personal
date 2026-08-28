@@ -9,9 +9,6 @@ export default function RegistroExitoso() {
                 <p className="text-gray-700 mb-6">
                     Tus datos han sido guardados correctamente. Pronto serán revisados por el administrador.
                 </p>
-                <Link href="/" className="text-blue-500 hover:underline">
-                    Volver al Inicio
-                </Link>
             </div>
         </div>
     );

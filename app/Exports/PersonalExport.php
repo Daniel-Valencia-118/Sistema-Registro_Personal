@@ -41,10 +41,11 @@ class PersonalExport implements FromQuery, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            'Paterno', 'Materno', 'Nombres', 'CI', 'Expedición', 'Sexo',
-            'Fecha Nac.', 'Provincia', 'Ciudad', 'Estado Civil',
+            'Paterno', 'Materno', 'Nombres', 'CI', 'Sexo',
+            'Fecha Nac.', 'Lugar de Nacimiento', 'Estado Civil',
             'Email', 'Teléfono', 'Celular', 'Dirección', 'Fecha Ingreso',
-            'Cargo'
+            'Cargo',
+            'Oficina Actual',
         ];
     }
 
@@ -54,12 +55,10 @@ class PersonalExport implements FromQuery, WithHeadings, WithMapping
             $persona->paterno,
             $persona->materno,
             $persona->nombres,
-            $persona->ci,
-            $persona->ci_expedicion,
+            $persona->ci . ' - ' . $persona->ci_expedicion,
             $persona->sexo,
             $persona->fecha_nacimiento ? Carbon::parse($persona->fecha_nacimiento)->format('d/m/Y') : '',
-            $persona->lugar_nacimiento_provincia,
-            $persona->lugar_nacimiento_ciudad,
+            $persona->lugar_nacimiento_ciudad . ' , ' . $persona->lugar_nacimiento_provincia,
             $persona->estado_civil,
             $persona->email,
             $persona->telefono,
@@ -67,6 +66,7 @@ class PersonalExport implements FromQuery, WithHeadings, WithMapping
             $persona->direccion_actual,
             $persona->fecha_ingreso_fundacion ? Carbon::parse($persona->fecha_ingreso_fundacion)->format('d/m/Y') : '',
             $persona->cargo_actual,
+            $persona->oficina_actual,
             // mb_strtoupper($persona->estado), // Estandarizamos el texto del estado a mayúsculas
         ];
     }

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Rules\TurnstileRule;
 
 class AuthController extends Controller
 {
@@ -23,7 +24,10 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'cf_turnstile_response' => ['required', new TurnstileRule()],
         ]);
+
+        $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $user = Auth::user();
@@ -65,6 +69,9 @@ class AuthController extends Controller
             'materno' => ['nullable', 'string', 'max:50'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'cf_turnstile_response' => ['required', new TurnstileRule()],
+        ] , [
+            'cf_turnstile_response.required' => 'Por favor complete la verificación de seguridad.',
         ]);
 
         $user = User::create([

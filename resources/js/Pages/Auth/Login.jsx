@@ -1,15 +1,23 @@
 import { useForm, Head, Link } from '@inertiajs/react';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function Login() {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
         remember: false,
+        cf_turnstile_response: '',
     });
+
+    const SITE_KEY = import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY;  
 
     const submit = (e) => {
         e.preventDefault();
-        post('/login');
+        post('/login', {
+            onError: (err) => {
+                // console.error("error: ", err);
+            }
+        });
     };
 
     return (
@@ -69,6 +77,21 @@ export default function Login() {
                         </label>
                     </div>
 
+                    {/* Turnstile Captcha */}
+                    <div className="flex flex-col items-center justify-center pt-2">
+                        <Turnstile
+                            siteKey={SITE_KEY}
+                            onSuccess={(token) => setData('cf_turnstile_response', token)}
+                            onExpire={() => setData('cf_turnstile_response', '')}
+                            onError={() => setData('cf_turnstile_response', '')}
+                        />
+                        {errors.cf_turnstile_response && (
+                            <p className="text-xs text-red-500 mt-2">
+                                {errors.cf_turnstile_response}
+                            </p>
+                        )}
+                    </div>
+
                     <button
                         type="submit"
                         disabled={processing}
@@ -76,6 +99,7 @@ export default function Login() {
                     >
                         {processing ? 'Iniciando sesión...' : 'Ingresar'}
                     </button>
+
                 </form>
 
                 <div className="mt-6 text-center text-sm text-gray-500">

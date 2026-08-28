@@ -13,19 +13,20 @@ return new class extends Migration
             $table->string('nombre_referente', 200);
             $table->string('institucion', 200);
             $table->string('telefono_celular', 20);
+            
+            // Relación correcta con la tabla personas
             $table->integer('id_persona')->unsigned();
-            // $table->integer('id_exp_lab')->unsigned();
+            
             $table->timestamps();
 
-            $table->bigInteger('id_persona')->unsigned(); 
-            $table->timestamps();
-
-            $table->foreign('id_persona')
-                  ->references('id')->on('personas')
-                  ->onDelete('cascade');
             // $table->foreign('id_exp_lab')
             //       ->references('id_exp_lab')->on('experiencias_laborales')
             //       ->onDelete('cascade');
+
+            // Clave foránea
+            $table->foreign('id_persona')
+                  ->references('id')->on('personas')
+                  ->onDelete('cascade');
         });
     }
 

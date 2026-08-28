@@ -27,6 +27,9 @@ return new class extends Migration
             $table->string('direccion_actual', 255)->nullable();
             $table->date('fecha_ingreso_fundacion')->nullable();
             $table->string('cargo_actual', 100)->nullable();
+            $table->string('oficina_actual', 100)->nullable();
+            $table->double('longitude', 10, 6)->nullable();
+            $table->double('latitude', 10, 6)->nullable();
             $table->string('url_croquis', 255)->nullable();
             $table->string('url_foto', 255)->nullable();
             $table->enum('estado', ['aprobado', 'observado', 'rechazado'])->nullable()->default('observado');

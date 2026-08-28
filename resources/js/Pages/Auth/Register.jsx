@@ -2,9 +2,10 @@ import React from 'react';
 import { Link, useForm } from '@inertiajs/react';
 import Input from '../../Components/Forms/Input';
 import Button from '../../Components/Forms/Button';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function Register() {
-    //useForm de Inertia maneja estados, errores y loading por ti
+    const SITE_KEY = import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY;
     const { data, setData, post, processing, errors } = useForm({
         nombre: '',
         paterno: '',
@@ -21,7 +22,7 @@ export default function Register() {
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        // Inertia se encarga del CSRF automáticamente y de la redirección
+    
         post('/register'); 
     };
 
@@ -37,7 +38,7 @@ export default function Register() {
                         <Input
                             label="Nombre"
                             name="nombre"
-                            value={data.nombre} // Cambiado form a data
+                            value={data.nombre}
                             onChange={handleChange}
                             error={errors.nombre}
                             required
@@ -55,7 +56,7 @@ export default function Register() {
                             name="materno"
                             value={data.materno}
                             onChange={handleChange}
-                            error={errors.paterno} // ⚠️ Ojo: Tenías errors.paterno duplicado aquí
+                            error={errors.paterno}
                             required
                         />
                         <Input
@@ -88,7 +89,20 @@ export default function Register() {
                         required
                     />
 
-                    {/* Cambiado loading por processing */}
+                    <div className="flex flex-col items-center justify-center pt-2">
+                        <Turnstile
+                            siteKey={SITE_KEY}
+                            onSuccess={(token) => setData('cf_turnstile_response', token)}
+                            onExpire={() => setData('cf_turnstile_response', '')}
+                            onError={() => setData('cf_turnstile_response', '')}
+                        />
+                        {errors.cf_turnstile_response && (
+                            <p className="text-xs text-red-500 mt-2">
+                                {errors.cf_turnstile_response}
+                            </p>
+                        )}
+                    </div>
+                    
                     <Button type="submit" loading={processing} className="w-full mt-2">
                         Registrarse
                     </Button>
